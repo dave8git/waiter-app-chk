@@ -4,12 +4,11 @@ import TableInfo from "../TableInfo/TableInfo";
 
 const Home = () => {
 
-    const allTables = useSelector(state => state.tables);
+    const tables = useSelector(state => state.tables);
 
-    console.log('allTables', allTables);
     return (
         <>
-            {allTables.map(table => <TableInfo {...table}/>) }
+            {tables.loading === true ? <h1>Loading...</h1> : tables.data.map(table => <TableInfo {...table}/>) }
         </>
     );
   }
