@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getAllStatus } from '../../redux/tableRedux';
-import { editTableRequest } from '../../redux/tableRedux';
+import { editTableRequest, getTable } from '../../redux/tableRedux';
 
 const TableForm = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
     const { id } = useParams();
-
+    const dispatch = useDispatch(); 
     const allStatuses = useSelector(state => getAllStatus(state));
+    const table = useSelector(state => getTable(state, id));
+    console.log('table status', table.status);
     console.log('allStatuses', allStatuses);
     console.log('id', id);
 
+    const [status, setStatus] = useState(table.status);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        dispatch(editTableRequest({status, id, })) // od razu wywołujemy tutaj funkcję editTableRequest() (są nawiasy), 
+        dispatch(editTableRequest({})) // od razu wywołujemy tutaj funkcję editTableRequest() (są nawiasy), 
         // tutaj to nie jest przekazywanie przez referencje a wywołanie. 
 
     }
@@ -27,15 +29,12 @@ const TableForm = () => {
         <Form onSubmit={handleSubmit}>
             <Form.Group>
                 <Form.Label>Name</Form.Label>
-                <Form.Select>
+                <Form.Select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}g
+                >
                     {allStatuses.map(status => (<option>{status}</option>))}
                 </Form.Select>
-                <Form.Control   
-                    type="text"
-                    placeholder="Enter your name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                />
             </Form.Group>
             <Form.Group>
                 <Form.Label>Email address</Form.Label>
