@@ -13,18 +13,16 @@ const TableForm = () => {
     console.log('table', table);
     console.log('allStatuses', allStatuses);
     console.log('id', id);
-    console.log('table.maxPeople', table.maxPeopleAmount);
-
-    const [status, setStatus] = useState(table.status);
-    const [maxPeople, setMaxPeople] = useState(table.maxPeople);
-    const [people, setPeople] = useState('');
-    const [bill, setBill] = useState('');
+   
+    const [status, setStatus] = useState(table ? table.status : 'uknown');
+    const [maxPeople, setMaxPeople] = useState(table ? table.maxPeople : 0);
+    const [people, setPeople] = useState(table ? table.people : 0);
+    const [bill, setBill] = useState(table ? table.bill : 0);
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        dispatch(editTableRequest({})) // od razu wywołujemy tutaj funkcję editTableRequest() (są nawiasy), 
+        dispatch(editTableRequest({status, maxPeople, people, bill}, id)); // od razu wywołujemy tutaj funkcję editTableRequest() (są nawiasy), 
         // tutaj to nie jest przekazywanie przez referencje a wywołanie. 
-
     }
 
     return (

@@ -3,8 +3,8 @@ import initialState from './initialState';
 
 // selectors
 // export const getAllTables = state => state.tables; // nie działa bo jest statePart a nie state
-export const getAllStatus = state => Array.from(new Set(state.tables.map(obj => obj.status)));
-export const getTable = (state, id) => state.tables.find(table => table.id === id);
+export const getAllStatus = state => Array.from(new Set(state.tables.data.map(obj => obj.status)));
+export const getTable = (state, id) => state.tables.data.find(table => table.id === id);
 // można prościej, używając destrukturyzacji: export const getAllStatus = state => new Set(state.tables.map(({ status }) => status));
 
 // action names
@@ -31,18 +31,20 @@ export const fetchTables = () => {
       }
 }
 
-export const editTableRequest = (data) => {
+export const editTableRequest = (data, tableId) => {
+  
     return (dispatch) => {
+        console.log('editTableRequest data', data);
         const options = {
             method: 'PUT', 
             headers: {
                 'Content-Type': 'aplication/json'
             },
-            body: JSON.stringify({}),
+            body: JSON.stringify(data), // zmienia dane na serwerze 
         };
 
-        fetch('http://localhost:3131/books', options)
-            .then(() => dispatch(editTable({})))
+        fetch(`http://localhost:3131/api/tables/${tableId}`, options)
+            .then(() => dispatch(editTable({data, tableId}))); // akcja zmieni na stronie (w komponencie)
     }
 }
 
@@ -55,16 +57,26 @@ export const editTableRequest = (data) => {
 const reducer = (statePart = initialState.tables, action) => {
     console.log('action', action);
     switch(action.type) {
-        // case EDIT_TABLE: 
-        //     return 
+        case EDIT_TABLE: 
+            return { 
+                ...statePart, 
+                data: statePart.data.map((table) => {
+                    if(table.id = action.payload.tableId) {
+                        return {
+                                ...action.payload.data, 
+                                id: action.payload.tableId
+                        }
+                    } 
+                    return table; 
+                    
+                })
+            }
         case SET_LOADING:
             return { ...statePart, loading: action.payload };
         case UPDATE_TABLES: 
-            console.log('action.payload z akcji', action.payload);
             return { ...statePart, data: action.payload}; // nadpisanie całej tablicy tables w stanie
         
         default: 
-            console.log('jesteśmy tutaj!', initialState);
             return statePart;
         }
 }
